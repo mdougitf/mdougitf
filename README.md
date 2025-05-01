@@ -1,7 +1,5 @@
 ## Hi there 👋
 
-<!--
-
 - 🔭 I’m currently working on improving my knowledge and skills  
 - 🌱 Learning Python & mastering the art of fast talking  
 - 👯 Looking to collaborate on fun, beginner-friendly, and creative projects  
@@ -12,4 +10,3 @@
 
 Thanks for stopping by! 🚀
 
--->
