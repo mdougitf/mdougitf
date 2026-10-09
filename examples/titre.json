@@ -1,0 +1,28 @@
+{
+  "width": 1280,
+  "height": 720,
+  "fps": 30,
+  "duration": 5,
+  "background": ["#111827", "#3b0764"],
+  "layers": [
+    { "type": "particles", "count": 50, "color": "#ffffff44", "speed": 20 },
+    {
+      "type": "arc", "x": 640, "y": 330, "r": 170, "width": 8, "color": "#f472b6", "sweep": 0,
+      "animate": { "sweep": [[0.2, 0], [1.4, 360, "out_cubic"]], "rotation": [[0.2, -120], [1.4, 0, "out_cubic"]] },
+      "effects": [["fade_out", 4.3, 0.5]]
+    },
+    {
+      "type": "polygon", "x": 640, "y": 330, "r": 70, "sides": 5, "inner": 0.45, "fill": "#facc15",
+      "effects": [["pop_in", 0.8, 0.7], ["spin", 0.8, 4.0, 1], ["pop_out", 4.2, 0.4]]
+    },
+    {
+      "type": "text", "x": 640, "y": 560, "text": "MON TITRE", "size": 80, "tracking": 8, "reveal": 0,
+      "animate": { "reveal": [[1.2, 0], [2.0, 1, "linear"]] },
+      "effects": [["slide_out", 4.2, 0.5, { "dy": 40 }]]
+    },
+    {
+      "type": "text", "x": 640, "y": 630, "text": "Sous-titre animé en JSON", "size": 26, "font": "regular", "fill": "#cbd5e1",
+      "effects": [["slide_in", 2.0, 0.6, { "dy": 30 }], ["fade_out", 4.2, 0.4]]
+    }
+  ]
+}
