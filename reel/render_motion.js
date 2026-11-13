@@ -17,6 +17,7 @@ const { chromium } = require('playwright'); const { spawn } = require('child_pro
       if (!ff.stdin.write(buf)) await new Promise(r => ff.stdin.once('drain', r));
     }
     ff.stdin.end(); await new Promise(r => ff.on('close', r));
+    fs.writeFileSync(path.join(path.dirname(path.resolve(a)), 'sfx_events.json'), JSON.stringify(await pg.evaluate(() => [...SFX.values()])));
   }
   await br.close();
 })();
