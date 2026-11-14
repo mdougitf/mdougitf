@@ -2,7 +2,7 @@
 """Effets sonores synthétisés à partir des évènements du montage (sfx_events.json) -> sfx.wav"""
 import json, sys, wave
 import numpy as np
-SR, DUR = 44100, 42.0
+SR, DUR = 44100, float(sys.argv[3]) if len(sys.argv) > 3 else 42.0
 rng = np.random.default_rng(3)
 mix = np.zeros((int(SR * (DUR + 1)), 2))
 
@@ -30,6 +30,11 @@ def swish(t):       x = tt(.2); add(t, band(len(x), 900, 6000) * np.hanning(len(
 def chime(t, f=1318.5):
     x = tt(.7); y = (np.sin(2 * np.pi * f * x) + .45 * np.sin(2 * np.pi * f * 1.498 * x) + .2 * np.sin(2 * np.pi * f * 2 * x)) * np.exp(-x / .16); add(t, y, .1)
 def scratch(t):     x = tt(.32); add(t, band(len(x), 1200, 8000) * np.hanning(len(x)) * (.6 + .4 * np.sin(2 * np.pi * 45 * x)), .2)
+def tick(t):        y = band(int(.03 * SR), 3000, 9000) * np.exp(-tt(.03) / .004); add(t, y, .12)
+def ding(t):
+    x = tt(1.2); y = (np.sin(2 * np.pi * 1568 * x) + .6 * np.sin(2 * np.pi * 2093 * x) + .25 * np.sin(2 * np.pi * 3136 * x)) * np.exp(-x / .35); add(t, y, .14)
+def step(t):        y, x = sweep(140, 70, .07); add(t, y * np.exp(-x / .02) + .3 * band(len(x), 200, 1200) * np.exp(-x / .01), .1, rng.uniform(-.3, .3))
+def poof(t):        x = tt(.35); add(t, band(len(x), 300, 3500) * np.exp(-x / .08) * (1 - np.exp(-x / .01)), .3)
 def beep(t):
     for k, f in enumerate((740, 587)):
         x = tt(.09); add(t + k * .16, np.sign(np.sin(2 * np.pi * f * x)) * np.hanning(len(x)), .035)
@@ -40,7 +45,8 @@ for k, t, x in ev:
         n, cps = x.split('|'); [click(t + i / float(cps)) for i in range(int(n))]
     elif k == 'cut': whoosh(t, .3, .16); thump(t)
     elif k == 'icon': swish(t); chime(t + .15, 1760)
-    else: {'word': word, 'pop': pop, 'boom': boom, 'scratch': scratch, 'chime': chime, 'beep': beep, 'whoosh': whoosh}[k](t)
+    else: {'word': word, 'pop': pop, 'boom': boom, 'scratch': scratch, 'chime': chime, 'beep': beep, 'whoosh': whoosh,
+     'tick': tick, 'ding': ding, 'step': step, 'poof': poof}[k](t)
 mix = mix[: int(SR * DUR)]
 mix = np.tanh(mix * 1.1) * .82              # limiteur doux
 with wave.open(sys.argv[2], 'wb') as w:
