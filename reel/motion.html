@@ -4,13 +4,24 @@
 <style>html,body{margin:0;background:#000}canvas{display:block}</style>
 <canvas id="c" width="1080" height="1920"></canvas>
 <script>
-/* Reel « Le système de l'étudiant-athlète » — motion design 1080x1920, 30 i/s, 42 s.
+/* Reel « Le système de l'étudiant-athlète » — motion design 1080x1920, 60 i/s (?fps=), 42 s, deux thèmes (?theme=navy|tech).
    Chaque image est une fonction pure du temps T (secondes) : pour recaler sur la voix,
    il suffit de changer les temps dans les scènes s1()…s6(). */
-const W = 1080, H = 1920, FPS = 30, DUR = 42;
-const NAVY = '#0D2440', WHITE = '#E7F0FA', BLUE = '#7BA4D0', DARK = '#07182c', MID = '#3E6A9E';
-const MUTED = 'rgba(231,240,250,.6)';
-const FF = '"Inter Display", Inter, sans-serif';
+const Q = new URLSearchParams(location.search);
+const THEME = Q.get('theme') || 'navy';                    // 'navy' (charte d'origine) ou 'tech' (noir / blanc / bleu électrique)
+const W = 1080, H = 1920, FPS = +(Q.get('fps') || 60), DUR = 42;
+const PAL = {
+  navy: { BG: '#0D2440', WHITE: '#E7F0FA', BLUE: '#7BA4D0', DARK: '#07182c', MID: '#3E6A9E', Wr: '231,240,250', Br: '123,164,208', BGr: '13,36,64',
+          GLOW: 'rgba(40,82,132,.38)', VIG: 'rgba(3,10,22,.62)', OUT: '#5d7fa6', SCR: '#0a1626', SIDE: '#07111f',
+          L1: '#f4f8fd', L2: '#c4d5ea', D1: '#1c3f6e', D2: '#0f2748', SH: 'rgba(7,24,44,.55)', NAVR: 'rgba(62,106,158,.38)', NAVR2: 'rgba(62,106,158,.45)' },
+  tech: { BG: '#0A0A0A', WHITE: '#FFFFFF', BLUE: '#3B82F6', DARK: '#050505', MID: '#1D4ED8', Wr: '255,255,255', Br: '59,130,246', BGr: '10,10,10',
+          GLOW: 'rgba(59,130,246,.16)', VIG: 'rgba(0,0,0,.7)', OUT: '#3f3f46', SCR: '#111113', SIDE: '#09090b',
+          L1: '#fafafa', L2: '#d4d4d8', D1: '#1e293b', D2: '#0f172a', SH: 'rgba(0,0,0,.55)', NAVR: 'rgba(59,130,246,.18)', NAVR2: 'rgba(59,130,246,.22)' },
+}[THEME];
+const NAVY = PAL.BG, WHITE = PAL.WHITE, BLUE = PAL.BLUE, DARK = PAL.DARK, MID = PAL.MID;
+const MUTED = `rgba(${PAL.Wr},.6)`;
+const MONO = THEME === 'tech';                              // textes secondaires et étiquettes en JetBrains Mono
+const FF = '"Inter Display", Inter, sans-serif', FM = '"JetBrains Mono", monospace';
 const HANDLE = '@itsmodoufall';
 const FR = new URLSearchParams(location.search).get('fr');   // dossier des images de la capture (60 i/s)
 const NFR = 1448, REC_TOP = 82;
@@ -26,7 +37,7 @@ const p = (t0, d) => clamp((T - t0) / d);                 // progression 0→1 �
 const eo = u => 1 - Math.pow(1 - u, 3);                    // ease-out (aucun rebond)
 const ex = u => u >= 1 ? 1 : 1 - Math.pow(2, -10 * u);
 function rng(seed) { return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
-function font(size, weight = 800) { ctx.font = `${weight} ${size}px ${FF}`; }
+function font(size, weight = 800) { ctx.font = MONO && weight === 700 ? `700 ${Math.round(size * .86)}px ${FM}` : `${weight} ${size}px ${FF}`; }
 
 // ---------- capture d'écran du dashboard ----------
 const cache = new Map(); let missing = [];
@@ -84,7 +95,7 @@ function iconSprite(g, px) {
   const c = document.createElement('canvas'); c.width = gw * px + pad * 2; c.height = gh * px + pad * 2;
   const x = c.getContext('2d'), each = f => { for (let r = 0; r < gh; r++) for (let q = 0; q < g[r].length; q++) f(g[r][q], pad + q * px, pad + r * px); };
   x.fillStyle = 'rgb(3,12,24)'; x.globalAlpha = .55; each((ch, X, Y) => { if (ch !== '.') x.fillRect(X + px * .9, Y + px * .9, px, px); });
-  x.globalAlpha = 1; x.fillStyle = '#5d7fa6'; each((ch, X, Y) => { if (ch === 'k') x.fillRect(X - px * .22, Y - px * .22, px * 1.44, px * 1.44); });
+  x.globalAlpha = 1; x.fillStyle = PAL.OUT; each((ch, X, Y) => { if (ch === 'k') x.fillRect(X - px * .22, Y - px * .22, px * 1.44, px * 1.44); });
   each((ch, X, Y) => { if (ch !== '.') { x.fillStyle = PIX[ch]; x.fillRect(X, Y, px, px); } });
   icache.set(key, c); if (icache.size > 80) icache.delete(icache.keys().next().value); return c;
 }
@@ -98,7 +109,7 @@ function icon(name, cx, cy, px, o = {}) {
 
 // ---------- formes dessinées ----------
 function brush(x0, y, x1, thick, prog, color = BLUE, seed = 1) {   // trait de pinceau qui se trace
-  if (prog <= 0) return;
+  if (prog <= 0) return; prog = eo(clamp(prog));
   const n = 60, m = Math.max(2, Math.round(n * clamp(prog))), top = [], bot = [];
   for (let i = 0; i <= m; i++) {
     const u = i / n, x = x0 + (x1 - x0) * u, tp = Math.pow(Math.sin(Math.PI * clamp(u, .02, .98)), .4);
@@ -196,8 +207,12 @@ function makeNoise() {
 function background() {
   ctx.fillStyle = NAVY; ctx.fillRect(0, 0, W, H);
   const g = ctx.createRadialGradient(W / 2, H * .46, 80, W / 2, H * .46, 1150);
-  g.addColorStop(0, 'rgba(40,82,132,.38)'); g.addColorStop(.55, 'rgba(13,36,64,0)'); g.addColorStop(1, 'rgba(3,10,22,.62)');
+  g.addColorStop(0, PAL.GLOW); g.addColorStop(.55, `rgba(${PAL.BGr},0)`); g.addColorStop(1, PAL.VIG);
   ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  if (MONO) {                                                // grille de points technique, qui glisse lentement
+    const sp = 54, off = (T * 6) % sp; ctx.fillStyle = 'rgba(255,255,255,.07)';
+    for (let gy = -sp; gy < H + sp; gy += sp) for (let gx = 0; gx < W + sp; gx += sp) ctx.fillRect(gx - 1, gy + off - 1, 2.4, 2.4);
+  }
   const r = rng(42);                                         // poussières pixel qui dérivent
   for (let i = 0; i < 16; i++) {
     const x = r() * W, y0 = r() * H, s = 5 + r() * 7, sp = 14 + r() * 30, ph = r() * 6;
@@ -208,12 +223,12 @@ function background() {
   ctx.globalAlpha = 1;
 }
 function grain() {
-  const r = rng(1000 + Math.floor(N / 2));
+  const r = rng(1000 + Math.floor(T * 15));
   ctx.save(); ctx.globalAlpha = .075; ctx.globalCompositeOperation = 'overlay';
   ctx.translate(-r() * 256, -r() * 256); ctx.scale(2.5, 2.5); ctx.fillStyle = ctx.createPattern(noise, 'repeat');
   ctx.fillRect(0, 0, W, H); ctx.restore();
 }
-function flash(t0, a = .16, d = .22) { sfx('cut', t0); if (T >= t0 && T < t0 + d) { ctx.fillStyle = `rgba(231,240,250,${a * (1 - p(t0, d))})`; ctx.fillRect(0, 0, W, H); } }
+function flash(t0, a = .16, d = .22) { sfx('cut', t0); if (T >= t0 && T < t0 + d) { ctx.fillStyle = `rgba(${PAL.Wr},${a * (1 - eo(p(t0, d)))})`; ctx.fillRect(0, 0, W, H); } }
 function floatIcon(name, x, y, px, t0, ph, o = {}) { sfx('pop', t0);        // icône qui naît et flotte
   const s = eo(p(t0, .45));
   icon(name, x + 14 * Math.sin(T * .9 + ph), y + 18 * Math.cos(T * .7 + ph), px, { scale: s, rot: .16 * Math.sin(T * .8 + ph) + (o.rot || 0), alpha: o.alpha });
@@ -227,10 +242,10 @@ function iconBlock(name, cx, cy, px, t0, flip = 1) { sfx('icon', t0);        // 
 function card(x, y, w, h, img, o = {}) {                    // carte vidéo : bord clair, halo, étincelle
   ctx.save(); ctx.globalAlpha *= o.alpha ?? 1;
   ctx.translate(x + w / 2, y + h / 2); ctx.rotate(o.rot || 0); ctx.scale(o.scale || 1, o.scale || 1);
-  ctx.shadowColor = 'rgba(123,164,208,.45)'; ctx.shadowBlur = 70; ctx.fillStyle = DARK; rr(-w / 2, -h / 2, w, h, 26); ctx.fill();
+  ctx.shadowColor = `rgba(${PAL.Br},.45)`; ctx.shadowBlur = 70; ctx.fillStyle = DARK; rr(-w / 2, -h / 2, w, h, 26); ctx.fill();
   ctx.shadowBlur = 0; ctx.save(); rr(-w / 2, -h / 2, w, h, 26); ctx.clip();
   cover(img, -w / 2, -h / 2, w, h, o.zoom || 1.12, o.fx ?? .12, o.fy ?? .5);
-  ctx.fillStyle = 'rgba(13,36,64,.14)'; ctx.fillRect(-w / 2, -h / 2, w, h); ctx.restore();
+  ctx.fillStyle = `rgba(${PAL.BGr},.14)`; ctx.fillRect(-w / 2, -h / 2, w, h); ctx.restore();
   ctx.lineWidth = 4; ctx.strokeStyle = WHITE; rr(-w / 2, -h / 2, w, h, 26); ctx.stroke();
   sparkle(w / 2 - 6, -h / 2 + 4, 46 * (1 + .18 * Math.sin(T * 5)), T * .4, .95);
   ctx.restore();
@@ -241,33 +256,33 @@ function mock(kind, x, y, w, h) {
   const bar = (bx, by, bw, bh, col, r = bh / 2) => { ctx.fillStyle = col; rr(bx, by, bw, bh, r); ctx.fill(); };
   const cardg = (bx, by, bw, bh, i) => {
     const g = ctx.createLinearGradient(bx, by, bx + bw, by + bh), k = i % 4;
-    if (k === 0 || k === 3) { g.addColorStop(0, '#f4f8fd'); g.addColorStop(1, '#c4d5ea'); } else if (k === 1) { g.addColorStop(0, '#1c3f6e'); g.addColorStop(1, '#0f2748'); } else { g.addColorStop(0, MID); g.addColorStop(1, BLUE); }
-    ctx.fillStyle = g; rr(bx, by, bw, bh, 6); ctx.fill(); bar(bx + 5, by + bh - 11, bw * .5, 5, 'rgba(7,24,44,.55)');
+    if (k === 0 || k === 3) { g.addColorStop(0, PAL.L1); g.addColorStop(1, PAL.L2); } else if (k === 1) { g.addColorStop(0, PAL.D1); g.addColorStop(1, PAL.D2); } else { g.addColorStop(0, MID); g.addColorStop(1, BLUE); }
+    ctx.fillStyle = g; rr(bx, by, bw, bh, 6); ctx.fill(); bar(bx + 5, by + bh - 11, bw * .5, 5, PAL.SH);
   };
-  const nav = (bx, by, bw, n, lh) => { bar(bx, by, bw, n * lh + 12, 'rgba(62,106,158,.38)', 7); for (let i = 0; i < n; i++) { bar(bx + 8, by + 10 + i * lh, 6, 6, BLUE, 2); bar(bx + 20, by + 10 + i * lh, bw * (.45 + .12 * ((i * 7) % 3)), 5, 'rgba(231,240,250,.75)'); } };
-  ctx.fillStyle = '#0a1626'; ctx.fillRect(x, y, w, h);
-  const L = 'rgba(231,240,250,.32)';
+  const nav = (bx, by, bw, n, lh) => { bar(bx, by, bw, n * lh + 12, PAL.NAVR, 7); for (let i = 0; i < n; i++) { bar(bx + 8, by + 10 + i * lh, 6, 6, BLUE, 2); bar(bx + 20, by + 10 + i * lh, bw * (.45 + .12 * ((i * 7) % 3)), 5, `rgba(${PAL.Wr},.75)`); } };
+  ctx.fillStyle = PAL.SCR; ctx.fillRect(x, y, w, h);
+  const L = `rgba(${PAL.Wr},.32)`;
   if (kind === 'phone') {
     const m = 14, cw = w - 2 * m; let cy = y + 30;
     bar(x + m, cy, cw * .78, 11, WHITE); cy += 22; bar(x + m, cy, cw * .5, 5, BLUE); cy += 16;
-    bar(x + m, cy, cw, 36, 'rgba(62,106,158,.45)', 7); bar(x + m + 8, cy + 10, cw * .8, 5, WHITE); bar(x + m + 8, cy + 21, cw * .55, 5, L); cy += 48;
+    bar(x + m, cy, cw, 36, PAL.NAVR2, 7); bar(x + m + 8, cy + 10, cw * .8, 5, WHITE); bar(x + m + 8, cy + 21, cw * .55, 5, L); cy += 48;
     nav(x + m, cy, cw, 4, 15); cy += 84;
     bar(x + m, cy, cw * .55, 8, WHITE); cy += 18;
     for (let i = 0; i < 3; i++) { cardg(x + m, cy, cw, 84, i); cy += 94; }
   } else if (kind === 'tablet') {
     const m = 22, cw = w - 2 * m; let cy = y + 30;
     bar(x + m, cy, cw * .62, 13, WHITE); cy += 26; bar(x + m, cy, cw * .4, 5, BLUE); cy += 18;
-    bar(x + m, cy, cw, 40, 'rgba(62,106,158,.45)', 8); bar(x + m + 10, cy + 11, cw * .78, 5, WHITE); bar(x + m + 10, cy + 23, cw * .5, 5, L); cy += 56;
+    bar(x + m, cy, cw, 40, PAL.NAVR2, 8); bar(x + m + 10, cy + 11, cw * .78, 5, WHITE); bar(x + m + 10, cy + 23, cw * .5, 5, L); cy += 56;
     const nw = cw * .3; nav(x + m, cy, nw, 5, 17);
     const gx = x + m + nw + 16, gw = cw - nw - 16, c2 = (gw - 10) / 2;
     bar(gx, cy, gw * .55, 9, WHITE); bar(gx, cy + 17, gw * .9, 4, L); bar(gx, cy + 27, gw * .6, 4, L);
     for (let i = 0; i < 4; i++) cardg(gx + (i % 2) * (c2 + 10), cy + 42 + Math.floor(i / 2) * 142, c2, 132, i);
   } else {
-    const sb = w * .17; ctx.fillStyle = '#07111f'; ctx.fillRect(x, y, sb, h);
+    const sb = w * .17; ctx.fillStyle = PAL.SIDE; ctx.fillRect(x, y, sb, h);
     for (let i = 0; i < 7; i++) bar(x + 8, y + 16 + i * 13, sb * (.5 + .1 * ((i * 5) % 3)), 4, L);
     const m = 16, mx = x + sb + m, cw = w - sb - 2 * m; let cy = y + 18;
     bar(mx, cy, cw * .5, 10, WHITE); cy += 18; bar(mx, cy, cw * .3, 4, BLUE); cy += 12;
-    bar(mx, cy, cw, 24, 'rgba(62,106,158,.45)', 6); bar(mx + 8, cy + 10, cw * .7, 4, WHITE); cy += 34;
+    bar(mx, cy, cw, 24, PAL.NAVR2, 6); bar(mx + 8, cy + 10, cw * .7, 4, WHITE); cy += 34;
     const nw = cw * .22; nav(mx, cy, nw, 4, 13);
     const gx = mx + nw + 12, gw = cw - nw - 12, c4 = (gw - 18) / 4;
     bar(gx, cy, gw * .4, 7, WHITE);
@@ -322,7 +337,7 @@ function s2() {                                             // 3–10 s · la do
     if (T >= 9.0) {
       flash(9.0, .2); font(640, 900); ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
       for (let k = 3; k >= 1; k--) if (T >= 9.0 + .09 * k) {     // 3 échos + 1 = quatre lectures
-        ctx.lineWidth = 5; ctx.strokeStyle = `rgba(231,240,250,${.5 - k * .11})`; ctx.strokeText('×4', 540 - k * 30, 1180 - k * 30);
+        ctx.lineWidth = 5; ctx.strokeStyle = `rgba(${PAL.Wr},${.5 - k * .11})`; ctx.strokeText('×4', 540 - k * 30, 1180 - k * 30);
       }
       const z = lerp(1.3, 1, ex(p(9.0, .3))); ctx.save(); ctx.translate(540, 960); ctx.scale(z, z);
       ctx.fillStyle = BLUE; ctx.fillText('×4', 0, 220); ctx.restore(); ctx.textAlign = 'left';
@@ -376,7 +391,7 @@ function s4() {                                             // 16–28 s · la s
     iconBlock('clock', 540, 1290, 13, 24.8, 1);
   }
   if (T >= 26.0) {                                           // 3 tâches. pas 12.
-    ctx.fillStyle = `rgba(13,36,64,${.9 * eo(p(26.0, .15))})`; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = `rgba(${PAL.BGr},${.9 * eo(p(26.0, .15))})`; ctx.fillRect(0, 0, W, H);
     if (T < 27.1) {
       words([{ size: 460, weight: 900, words: [['3', BLUE, 26.0]] }, { size: 190, words: [['tâches.', WHITE, 26.0]] }], W / 2, 840, .98);
       [0, 1, 2].forEach(i => icon('check', 380 + i * 160, 1290, 12, { scale: lerp(.4, 1, eo(p(26.15 + i * .15, .2))), alpha: p(26.15 + i * .15, .08) }));
@@ -407,7 +422,7 @@ function s5() {                                             // 28–36 s · ce q
     const dev = (t, x, w, h, rad, kind, lap) => {
       if (T < t) return; const e = eo(p(t, .3)), y = base - h + (1 - e) * 90;
       ctx.save(); ctx.globalAlpha = p(t, .1);
-      ctx.shadowColor = 'rgba(123,164,208,.4)'; ctx.shadowBlur = 50; ctx.fillStyle = DARK; rr(x, y, w, h, rad); ctx.fill(); ctx.shadowBlur = 0;
+      ctx.shadowColor = `rgba(${PAL.Br},.4)`; ctx.shadowBlur = 50; ctx.fillStyle = DARK; rr(x, y, w, h, rad); ctx.fill(); ctx.shadowBlur = 0;
       ctx.save(); rr(x + 9, y + 9, w - 18, h - 18, rad * .6); ctx.clip(); mock(kind, x + 9, y + 9, w - 18, h - 18); ctx.restore();
       ctx.lineWidth = 4; ctx.strokeStyle = WHITE; rr(x, y, w, h, rad); ctx.stroke();
       if (lap) { ctx.fillStyle = WHITE; rr(x - 26, y + h + 6, w + 52, 20, 10); ctx.fill(); }
@@ -450,5 +465,5 @@ function draw() {
   ctx.globalAlpha = 1; grain();
 }
 window.renderFrame = async n => { N = n; T = n / FPS + 1e-6; missing = []; draw(); if (missing.length) { await loadMissing(); missing = []; draw(); } };
-window.ready = (async () => { await Promise.all([700, 800, 900].map(w => document.fonts.load(`${w} 40px "Inter Display"`))); makeNoise(); })();
+window.ready = (async () => { await Promise.all([...[700, 800, 900].map(w => document.fonts.load(`${w} 40px "Inter Display"`)), document.fonts.load('700 40px "JetBrains Mono"')]); makeNoise(); })();
 </script>
