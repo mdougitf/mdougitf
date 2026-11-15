@@ -1,0 +1,170 @@
+{
+ "dur": 22.835,
+ "segs": [
+  {
+   "src": [
+    1.475,
+    2.9
+   ],
+   "out": [
+    0.25,
+    1.675
+   ],
+   "text": "il faut savoir que le cerveau"
+  },
+  {
+   "src": [
+    3.255,
+    4.39
+   ],
+   "out": [
+    1.775,
+    2.91
+   ],
+   "text": "adore le confort."
+  },
+  {
+   "src": [
+    4.355,
+    5.69
+   ],
+   "out": [
+    3.05,
+    4.385
+   ],
+   "text": "tout ce qui est effort, il n'aime pas."
+  },
+  {
+   "src": [
+    6.195,
+    7.46
+   ],
+   "out": [
+    4.525,
+    5.79
+   ],
+   "text": "il fait tout pour t'en éloigner."
+  },
+  {
+   "src": [
+    7.695,
+    8.74
+   ],
+   "out": [
+    6.01,
+    7.055
+   ],
+   "text": "maintenant, l'astuce, c'est quoi ?"
+  },
+  {
+   "src": [
+    8.795,
+    11.02
+   ],
+   "out": [
+    7.195,
+    9.42
+   ],
+   "text": "pour enlever cette procrastination, il faut juste se dire :"
+  },
+  {
+   "src": [
+    11.475,
+    14.32
+   ],
+   "out": [
+    9.58,
+    12.425
+   ],
+   "text": "ok, je vais juste réviser 5 minutes, je vais juste regarder ça 5 minutes."
+  },
+  {
+   "src": [
+    15.315,
+    16.4
+   ],
+   "out": [
+    12.585,
+    13.67
+   ],
+   "text": "tu commences à réviser 5 minutes"
+  },
+  {
+   "src": [
+    16.395,
+    18.69
+   ],
+   "out": [
+    13.75,
+    16.045
+   ],
+   "text": "et là, tu commences à sentir que la motivation rentre."
+  },
+  {
+   "src": [
+    18.715,
+    19.41
+   ],
+   "out": [
+    16.205,
+    16.9
+   ],
+   "text": "c'est ça la règle."
+  },
+  {
+   "src": [
+    19.525,
+    20.3
+   ],
+   "out": [
+    17.06,
+    17.835
+   ],
+   "text": "il faut se dire 5 minutes"
+  },
+  {
+   "src": [
+    20.555,
+    21.08
+   ],
+   "out": [
+    17.955,
+    18.48
+   ],
+   "text": "et après,"
+  },
+  {
+   "src": [
+    21.395,
+    22.29
+   ],
+   "out": [
+    18.68,
+    19.575
+   ],
+   "text": "boum, tu continues."
+  },
+  {
+   "src": [
+    22.525,
+    22.99
+   ],
+   "out": [
+    19.755,
+    20.22
+   ],
+   "text": "easy-peasy."
+  },
+  {
+   "src": [
+    23.635,
+    24.4
+   ],
+   "out": [
+    20.47,
+    21.235
+   ],
+   "text": "abonne-toi maintenant."
+  }
+ ]
+}
