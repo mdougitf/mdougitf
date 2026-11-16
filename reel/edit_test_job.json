@@ -1,0 +1,54 @@
+{
+ "clips": [
+  {
+   "dir": "clip0",
+   "n": 742,
+   "fps": 30,
+   "layout": "drop",
+   "focus": [
+    0.52,
+    0.1
+   ],
+   "max": 23.85,
+   "scale": 0.84,
+   "y": 400
+  }
+ ],
+ "zooms": [
+  1,
+  1.07,
+  1,
+  1.1,
+  1.04,
+  1.08,
+  1,
+  1.06,
+  1.1,
+  1.04,
+  1,
+  1.07,
+  1.1,
+  1.05,
+  1
+ ],
+ "captions": [
+  "il faut savoir que|le cerveau|",
+  "adore|le confort|",
+  "tout ce qui est|effort|il n'aime pas",
+  "il fait tout pour|t'en éloigner|",
+  "maintenant|l'astuce|c'est quoi ?",
+  "pour enlever cette|procrastination|",
+  "il faut juste se dire||",
+  "ok, je vais juste réviser|5 minutes|",
+  "je vais juste regarder ça|5 minutes|",
+  "tu commences à réviser|5 minutes|",
+  "et là, tu commences à sentir que||",
+  "la|motivation|rentre",
+  "c'est ça|la règle|",
+  "il faut se dire|5 minutes|et après",
+  "|boum|tu continues",
+  "|easy-peasy|",
+  "|abonne-toi|maintenant"
+ ],
+ "capY": 1440
+}

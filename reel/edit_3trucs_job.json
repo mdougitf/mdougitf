@@ -1,0 +1,12 @@
+{"_note": "À compléter après le tournage : n = nombre d'images de chaque prise, captions = tes mots exacts.",
+ "clips": [{"dir": "clip0", "n": 0, "fps": 30, "layout": "full", "focus": [0.5, 0.55]}, {"dir": "clip1", "n": 0, "fps": 30, "layout": "full", "focus": [0.5, 0.55]}],
+ "zooms": [1, 1.14, 1, 1.22, 1.07],
+ "captions": ["y a des soirs|j'ouvre mon cours|", "je lis la première ligne||", "et je sais déjà que|je vais rien retenir|",
+  "pendant longtemps||", "j'ai cru que c'était|moi le problème|", "que j'étais juste|pas assez discipliné|", "alors|j'ai tout essayé|",
+  "|les fiches|", "|les applis|", "|les plannings|super carrés", "et en fait||", "ce qui a vraiment changé les choses||", "c'est|trois trucs|tout bêtes",
+  "le premier||", "quand j'ai|vraiment pas envie|", "je me dis que je m'y mets|juste cinq minutes|", "c'est tout||", "et le plus drôle||",
+  "une fois que|t'as commencé|", "t'as plus envie|de t'arrêter|", "le deuxième||", "j'ai arrêté de garder|le plus dur|pour le soir",
+  "à 22 heures|je suis cuit|comme tout le monde", "maintenant|ce qui me fait peur|", "je le fais quand j'ai encore|de l'énergie|",
+  "et le troisième||", "le matin, je choisis|trois choses|à faire", "pas une liste de douze|que je finirai jamais|", "|trois|",
+  "et quand elles sont faites||", "j'ai le droit|d'être fier|de ma journée", "si t'es dans cette période|où t'arrives à rien|",
+  "|enregistre|cette vidéo", "tu la ressortiras|un soir|où ça va pas"]}
