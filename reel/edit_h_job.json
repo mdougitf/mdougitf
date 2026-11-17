@@ -1,0 +1,125 @@
+{
+ "size": [
+  1920,
+  1080
+ ],
+ "capY": 905,
+ "capK": 0.78,
+ "capW": 1500,
+ "clips": [
+  {
+   "dir": "clip0",
+   "n": 448,
+   "fps": 30,
+   "layout": "full",
+   "focus": [
+    0.5,
+    0.31
+   ]
+  },
+  {
+   "dir": "clip1",
+   "n": 450,
+   "fps": 30,
+   "layout": "full",
+   "focus": [
+    0.5,
+    0.31
+   ]
+  },
+  {
+   "dir": "clip2",
+   "n": 451,
+   "fps": 30,
+   "layout": "full",
+   "focus": [
+    0.5,
+    0.31
+   ]
+  },
+  {
+   "dir": "clip3",
+   "n": 450,
+   "fps": 30,
+   "layout": "full",
+   "focus": [
+    0.5,
+    0.31
+   ]
+  },
+  {
+   "dir": "clip4",
+   "n": 450,
+   "fps": 30,
+   "layout": "full",
+   "focus": [
+    0.5,
+    0.31
+   ]
+  },
+  {
+   "dir": "clip5",
+   "n": 449,
+   "fps": 30,
+   "layout": "full",
+   "focus": [
+    0.5,
+    0.31
+   ]
+  },
+  {
+   "dir": "clip6",
+   "n": 450,
+   "fps": 30,
+   "layout": "full",
+   "focus": [
+    0.5,
+    0.31
+   ]
+  },
+  {
+   "dir": "clip7",
+   "n": 156,
+   "fps": 30,
+   "layout": "full",
+   "focus": [
+    0.5,
+    0.31
+   ]
+  }
+ ],
+ "captions": [
+  "il me manque juste|ces 3 choses|",
+  "|le premier|",
+  "quand j'ai vraiment|pas envie|de réviser",
+  "je me dis juste que je vais regarder|le cours 5 minutes|",
+  "et le plus drôle dans ça||",
+  "c'est que dès que|je commence|",
+  "|je m'arrête plus|",
+  "donc la prochaine fois|dis-toi juste 5 minutes|",
+  "et|attaque le travail|",
+  "|le deuxième|",
+  "j'ai arrêté de faire|les tâches les plus dures|le soir",
+  "quand je suis|vraiment fatigué|",
+  "dans ces moments-là|t'arrives pas à retenir|",
+  "ton cerveau|il est fatigué|",
+  "tout ce qu'il a besoin c'est des|tâches faciles|",
+  "|flashcards|",
+  "|fiches|n'importe quoi",
+  "|le troisième|",
+  "le matin, j'ai choisi|3 tâches|à faire pendant la journée",
+  "|pas 12|",
+  "juste|3|mec",
+  "|3|",
+  "et dès que j'ai fini||",
+  "j'aurai le droit|d'être fier|de moi",
+  "si t'es dans cette période||",
+  "je te conseille de|t'abonner|",
+  "et d'|enregistrer cette vidéo|",
+  "parce que ça te servira|une autre fois|",
+  "|have a good day|"
+ ],
+ "grade": "contrast(1.06) saturate(1.12) brightness(1.1)",
+ "vig": 0.45,
+ "stickK": 1.3
+}

@@ -6,8 +6,12 @@
    - rien dans les zones couvertes par l'interface Instagram (haut 230 px, bas 420 px, colonne de droite).
    Assemblé par build_edit.py avec les données du montage (CLIPS, SEGS, CAPS) et un plan propre à la vidéo. */
 const ACCENT = Q.get('accent') || '#FFE14D';                  // couleur du mot fort
-const GRADE = 'contrast(1.08) saturate(1.1) brightness(1.02)';
-const CAP_Y = typeof CAPY !== 'undefined' ? CAPY : 1300;        // ligne du mot fort (réglable par montage)
+const GRADE = typeof GRADEF !== 'undefined' ? GRADEF : 'contrast(1.08) saturate(1.1) brightness(1.02)';
+const VIG = typeof VIGK !== 'undefined' ? VIGK : 1;              // force des assombrissements (dégradés + vignette)
+const STK = typeof STICKK !== 'undefined' ? STICKK : 1;           // taille des autocollants
+const CAP_Y = typeof CAPY !== 'undefined' ? CAPY : Math.round(H * .677);   // ligne du mot fort (réglable par montage)
+const CAP_K = typeof CAPK !== 'undefined' ? CAPK : 1;          // échelle des sous-titres (horizontal : plus petits)
+const CAP_W = typeof CAPW !== 'undefined' ? CAPW : W - 120;    // largeur max d'une ligne
 const PUNCH = [];                                             // instants des coups de zoom (remplis par le plan)
 
 // ---------- image ----------
@@ -51,18 +55,19 @@ function faceLayer() {
   if (prev && prev.clip !== seg.clip && dt < .22) {            // changement de prise : balayage latéral
     const e = ex(dt / .22); drawSeg(si - 1, T, -W * e); drawSeg(si, T, W * (1 - e)); sfx('whoosh', seg.out[0]);
   } else drawSeg(si, T);
-  let g = ctx.createLinearGradient(0, 980, 0, H); g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(.5, 'rgba(0,0,0,.42)'); g.addColorStop(1, 'rgba(0,0,0,.8)');
-  ctx.fillStyle = g; ctx.fillRect(0, 980, W, H - 980);         // assise sombre pour les sous-titres
-  g = ctx.createLinearGradient(0, 0, 0, 620); g.addColorStop(0, 'rgba(0,0,0,.45)'); g.addColorStop(1, 'rgba(0,0,0,0)'); ctx.fillStyle = g; ctx.fillRect(0, 0, W, 620);
-  g = ctx.createRadialGradient(W / 2, H * .5, 500, W / 2, H * .5, 1250); g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,.4)'); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  const sy = Math.round(H * .51);
+  let g = ctx.createLinearGradient(0, sy, 0, H); g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(.5, `rgba(0,0,0,${.42 * VIG})`); g.addColorStop(1, `rgba(0,0,0,${.8 * VIG})`);
+  ctx.fillStyle = g; ctx.fillRect(0, sy, W, H - sy);           // assise sombre pour les sous-titres
+  g = ctx.createLinearGradient(0, 0, 0, H * .32); g.addColorStop(0, `rgba(0,0,0,${.45 * VIG})`); g.addColorStop(1, 'rgba(0,0,0,0)'); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H * .32);
+  const rr0 = Math.min(W, H) * .46, rr1 = Math.hypot(W, H) * .56; g = ctx.createRadialGradient(W / 2, H * .5, rr0, W / 2, H * .5, rr1); g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, `rgba(0,0,0,${.4 * VIG})`); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
 }
 
 // ---------- sous-titres à trois étages ----------
 function capLine(words, y, size, weight, color, key) {
   if (!words.length) return;
-  ctx.font = `${weight} ${size}px ${FF}`; const txt = words.map(w => w[0]).join(' '), full = ctx.measureText(txt).width, max = key ? 960 : 900;
+  size *= CAP_K; ctx.font = `${weight} ${size}px ${FF}`; const txt = words.map(w => w[0]).join(' '), full = ctx.measureText(txt).width, max = key ? CAP_W : CAP_W * .94;
   if (full > max) { size *= max / full; ctx.font = `${weight} ${size}px ${FF}`; }
-  const sp = ctx.measureText(' ').width; let x = 540 - ctx.measureText(txt).width / 2;
+  const sp = ctx.measureText(' ').width; let x = W / 2 - ctx.measureText(txt).width / 2;
   ctx.lineJoin = 'round'; ctx.textBaseline = 'alphabetic';
   for (const [w, t] of words) {
     const ww = ctx.measureText(w).width;
@@ -79,13 +84,13 @@ function capLine(words, y, size, weight, color, key) {
 function captions3() {
   const c = CAPS.find(c => T >= c.t0 && T < c.t1); if (!c) return;
   if (c.key.length) {
-    capLine(c.top, CAP_Y - 112, 56, 800, WHITE); capLine(c.key, CAP_Y, 124, 900, ACCENT, true); capLine(c.bot, CAP_Y + 78, 56, 800, WHITE);
-  } else capLine(c.top, CAP_Y - 20, 76, 800, WHITE);
+    capLine(c.top, CAP_Y - 112 * CAP_K, 56, 800, WHITE); capLine(c.key, CAP_Y, 124, 900, ACCENT, true); capLine(c.bot, CAP_Y + 78 * CAP_K, 56, 800, WHITE);
+  } else capLine(c.top, CAP_Y - 20 * CAP_K, 76, 800, WHITE);
 }
 
 // ---------- éléments par-dessus l'image ----------
 function sticker(ic, x, y, size, o = {}) {                    // icône pixel sur pastille sombre bordée de blanc
-  const s = o.scale ?? 1; if (s <= .01 || (o.alpha ?? 1) <= 0) return;
+  size *= STK; const s = o.scale ?? 1; if (s <= .01 || (o.alpha ?? 1) <= 0) return;
   const g = Array.isArray(ic) ? ic : ICONS[ic], gw = Math.max(...g.map(r => r.length)), px = Math.max(3, Math.floor(size * .6 / Math.max(gw, g.length)));
   ctx.save(); ctx.globalAlpha *= o.alpha ?? 1; ctx.translate(x, y); ctx.rotate(o.rot || 0); ctx.scale(s, s);
   ctx.shadowColor = 'rgba(0,0,0,.6)'; ctx.shadowBlur = 34; ctx.shadowOffsetY = 12; ctx.fillStyle = o.bg || '#0d1017'; rr(-size / 2, -size / 2, size, size, size * .26); ctx.fill();
@@ -93,7 +98,7 @@ function sticker(ic, x, y, size, o = {}) {                    // icône pixel su
   icon(ic, -px * .4, -px * .4, px); ctx.restore();
 }
 // items : [icône, x, y, instant, rotation, taille] ; à clearT tout est éjecté vers l'extérieur
-function pile(items, clearT = 1e9, cx = 540, cy = 400) {
+function pile(items, clearT = 1e9, cx = W / 2, cy = 400) {
   items.forEach(([ic, x, y, t, rot = 0, size = 150], i) => {
     if (T < t) return; sfx('pop', t);
     let s = lerp(.25, 1, ex(p(t, .28))), a = p(t, .07), dx = 0, dy = 0;

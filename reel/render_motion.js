@@ -8,6 +8,7 @@ const { chromium } = require('playwright'); const { spawn } = require('child_pro
   pg.on('pageerror', e => { console.error('PAGE', e.message); });
   await pg.goto('file://' + path.join(__dirname, PAGE) + '?theme=' + theme + '&fr=' + encodeURIComponent('file://' + path.resolve(frames)));
   await pg.evaluate(() => window.ready); const FPS = await pg.evaluate(() => FPS), DUR = await pg.evaluate(() => DUR);
+  const [VW, VH] = await pg.evaluate(() => [W, H]); await pg.setViewportSize({ width: VW, height: VH });
   if (a === '--stills') {
     for (const t of b.split(',')) { await pg.evaluate(n => renderFrame(n), Math.round(t * FPS)); await pg.screenshot({ path: path.join(c, `f_${t}.jpg`), type: 'jpeg', quality: 80 }); }
   } else {

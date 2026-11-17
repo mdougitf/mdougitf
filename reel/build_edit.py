@@ -42,17 +42,19 @@ ends = [w[1] for w in tl["words"]]
 for c in caps:                                                # un groupe ne traîne pas plus de 0,5 s après son dernier mot
     last = max(t for k in ("top", "key", "bot") for _, t in c[k]); end = min([e for e in ends if e > last], default=last + .4); c["t1"] = min(c["t1"], end + .5)
 zooms = job.get("zooms", [1, 1.14, 1, 1.22, 1.07])
-segs = [{**s, "z": zooms[i % len(zooms)]} for i, s in enumerate(tl["segs"])]
+segs = [{**s, "z": s.get("z", zooms[i % len(zooms)])} for i, s in enumerate(tl["segs"])]
 
 src = (here / "motion.html").read_text()
-lib = src[src.index("const Q = new URLSearchParams"):src.index("// ---------- maquettes du dashboard")].replace("DUR = 42;", f"DUR = {tl['dur']};")
+W, H = job.get("size", [1080, 1920])
+lib = src[src.index("const Q = new URLSearchParams"):src.index("// ---------- maquettes du dashboard")].replace("DUR = 42;", f"DUR = {tl['dur']};").replace("const W = 1080, H = 1920", f"const W = {W}, H = {H}")
 pro = (here / "procrast_scenes.js").read_text(); pro = pro[:pro.index("// ---------- scènes ----------")]
-data = (f"const CAPY = {job['capY']};\n" if 'capY' in job else "") + f"const WORDS = {json.dumps([[w[0], norm(w[2])] for w in tl['words']], ensure_ascii=False)};\n" + f"const CLIPS = {json.dumps(job['clips'])};\nconst SEGS = {json.dumps(segs)};\nconst CAPS = {json.dumps(caps, ensure_ascii=False)};\n"
+NAMES = {"capY": "CAPY", "capK": "CAPK", "capW": "CAPW", "grade": "GRADEF", "vig": "VIGK", "stickK": "STICKK"}
+data = "".join(f"const {NAMES[k]} = {json.dumps(job[k])};\n" for k in NAMES if k in job) + f"const WORDS = {json.dumps([[w[0], norm(w[2])] for w in tl['words']], ensure_ascii=False)};\n" + f"const CLIPS = {json.dumps(job['clips'])};\nconst SEGS = {json.dumps(segs)};\nconst CAPS = {json.dumps(caps, ensure_ascii=False)};\n"
 Path(sys.argv[4]).write_text(f"""<!doctype html>
 <meta charset="utf-8">
 <title>Montage face plein écran</title>
 <style>html,body{{margin:0;background:#000}}canvas{{display:block}}</style>
-<canvas id="c" width="1080" height="1920"></canvas>
+<canvas id="c" width="{W}" height="{H}"></canvas>
 <script>
 /* Fichier généré par build_edit.py — ne pas modifier à la main. */
 {lib}

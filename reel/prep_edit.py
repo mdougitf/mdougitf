@@ -58,9 +58,10 @@ def finalize(work, model_dir):
         wav16(clip, work / f"c{ci}_48.wav", SR); audio[ci] = read(work / f"c{ci}_48.wav")[0]
     out, t, segs = [np.zeros(int(.2 * SR), "float32")], .2, []
     for c in [c for c in job["cuts"] if c.get("keep", True)]:
-        s0, e0 = c["s"] - .035, c["e"] + .07; x = audio[c["clip"]][int(s0 * SR):int(e0 * SR)].copy(); f = int(.012 * SR)
-        x[:f] *= np.linspace(0, 1, f); x[-f:] *= np.linspace(1, 0, f)
-        segs.append({"clip": c["clip"], "src": [round(s0, 3), round(e0, 3)], "out": [round(t, 3), round(t + len(x) / SR, 3)]})
+        s0, e0 = max(0, c["s"] - c.get("pre", .035)), c["e"] + c.get("post", .07); x = audio[c["clip"]][int(s0 * SR):int(e0 * SR)].copy(); f = int(.012 * SR)
+        if c.get("fadeIn", True): x[:f] *= np.linspace(0, 1, f)          # raccord continu entre deux tranches : pas de fondu
+        if c.get("fadeOut", True): x[-f:] *= np.linspace(1, 0, f)
+        segs.append({"clip": c["clip"], "src": [round(s0, 3), round(e0, 3)], "out": [round(t, 3), round(t + len(x) / SR, 3)], **({"z": c["z"]} if "z" in c else {})})
         out += [x, np.zeros(int(c.get("gap", .14) * SR), "float32")]; t += len(x) / SR + c.get("gap", .14)
     y = np.concatenate(out + [np.zeros(int(1.2 * SR), "float32")]); y = y / np.abs(y).max() * .89
     w = wave.open(str(work / "voice.wav"), "wb"); w.setnchannels(1); w.setsampwidth(2); w.setframerate(SR); w.writeframes((y * 32767).astype("<i2").tobytes())
